@@ -1,0 +1,193 @@
+---
+import type {SubNavigationItem} from "../_types/SubNavigationItem"
+import RootLayout from "./RootLayout.astro"
+import LineDecorator from "../components/LineDecorator"
+import PageTracker from "../components/PageTracker"
+
+interface Props {
+    title?: string
+    subTitle?: string
+    tabTitle?: string
+    subNavigationItems?: SubNavigationItem[]
+}
+
+const title = Astro.props.title ?? "INFO"
+const subTitle = Astro.props.subTitle ?? "情报中心"
+const tabTitle = Astro.props.tabTitle ?? "情报中心"
+const subNavigationItems = Astro.props.subNavigationItems
+---
+
+<RootLayout title={tabTitle} {...{subNavigationItems}}>
+    <!-- TODO: Canvas 动态背景 -->
+    <div class="landscape:hidden">
+        <PageTracker client:only="react"/>
+    </div>
+    <LineDecorator client:only="react"/>
+    <div class="w-full h-full flex pt-[9.5rem] portrait:pt-[9.375rem] portrait:pr-[5.75rem] break-words hyphens-auto text-ellipsis">
+        {
+            // TODO: 左侧栏竖屏适配
+
+            Astro.slots.has("left-aside") &&
+                <aside id="info-layout-left-aside-slot"
+                       class="shrink-0 overflow-y-auto hidden sm:block">
+                    <slot name="left-aside"/>
+                </aside>
+        }
+
+        <main class="pb-[4.5rem] portrait:pt-[2.5rem] pl-20 portrait:pl-[1.875rem] portrait:pb-[12rem] box-border grow overflow-y-auto">
+          <!-- 修改正文左边界   -->
+          <div id="info-layout-main-slot"
+                 class="w-full h-full overflow-x-hidden overflow-y-auto"
+                 style={{
+                     // TODO: 上边框也添加渐变
+                     mask: "linear-gradient(0deg, transparent, #000 1rem)"
+                 }}>
+                <slot/>
+            </div>
+        </main>
+
+        <!-- 右侧内容已移动到左侧 -->
+    </div>
+
+    {
+        Astro.slots.has("tool-panel") &&
+            <div id="info-layout-tool-panel-slot"
+                 class="h-[3.75rem] mb-[9.5rem] portrait:mb-[5.75rem] absolute bottom-0 right-0 flex z-10">
+                <slot name="tool-panel"/>
+            </div>
+    }
+</RootLayout>
+
+<script>
+    import {viewIndex} from "../components/store/rootLayoutStore"
+    import {directions} from "../components/store/lineDecoratorStore"
+
+    viewIndex.set(1)
+
+    function handleWindowsResize() {
+        if (window.innerWidth > window.innerHeight)
+            directions.set({top: true, right: false, bottom: false, left: false})
+        else
+            directions.set({top: true, right: true, bottom: false, left: false})
+    }
+
+    handleWindowsResize()
+    window.addEventListener("resize", handleWindowsResize)
+</script>
+
+<style lang="scss" is:global>
+  // TODO: Markdown CSS
+
+  article {
+    font-size: 18px;
+    font-family: "Source Han Sans", "微软雅黑", sans-serif;
+
+    ::selection {
+      color: black;
+      background-color: #fe2;
+    }
+
+    h1 {
+      font-size: 58px;
+      font-weight: 900;
+    }
+
+    h2 {
+      font-size: 48px;
+      font-weight: 800;
+      padding-top: 2rem;
+    }
+
+    h3 {
+      font-size: 42px;
+      font-weight: 700;
+      padding-top: 1.5rem;
+    }
+
+    h4 {
+      font-size: 38px;
+      font-weight: 600;
+    }
+
+    h5 {
+      font-size: 36px;
+      font-weight: 500;
+    }
+
+    h6 {
+      font-size: 32px;
+      font-weight: 400;
+    }
+
+    h4, h5, h6 {
+      padding-top: 1rem;
+    }
+
+    p {
+      margin: .3rem 0;
+
+      img {
+        display: inline-block;
+      }
+    }
+
+    ul {
+      margin: 1rem 0;
+      padding-left: 2.5rem;
+      list-style: disc;
+
+      ul {
+        margin: 0;
+      }
+    }
+
+    ol {
+      margin: 1rem 0;
+      padding-left: 2.5rem;
+      list-style: decimal outside;
+    }
+
+    a {
+      color: #18d1ff;
+      padding: 0 3px;
+      display: inline-block;
+      transition: color, background-color;
+      transition-duration: 300ms;
+
+      &:hover {
+        color: black;
+        background-color: #18d1ff;
+      }
+    }
+
+    em strong {
+      color: #fe2;
+    }
+
+    strong {
+      color: rgb(192, 57, 43);
+    }
+
+    blockquote {
+      /*background-color: rgba(black, .2);*/
+      margin: .5rem 0;
+      border-left: .25rem solid #5a5a5a;
+      padding: .3rem .6rem;
+      box-sizing: border-box;
+    }
+
+    p, li, th, td {
+      code {
+        background-color: rgba(255, 255, 255, 0.125);
+        padding: 0 3px;
+      }
+    }
+
+    .astro-code {
+      margin: 1rem 0;
+      padding: 1rem 2rem;
+      box-sizing: border-box;
+      /* TODO: 显示行号、可设置高亮行、中英文等宽字体、复制代码按钮、切换自动换行按钮、可折叠、 */
+    }
+  }
+</style>

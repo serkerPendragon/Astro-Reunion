@@ -1,0 +1,156 @@
+import React from "react";
+import { IconArrow } from "../SvgIcons.tsx";
+import config from "../../../arknights.config.tsx";
+import { motion } from "framer-motion";
+// import LogoParticleCanvas from "./DN_logos.tsx";
+import AshParticles from "./AshParticles.tsx";
+
+interface WorldItem {
+  title: string;
+  subTitle: string;
+  description: string;
+  imageUrl: string;
+}
+
+interface WorldDetailsProps {
+  item?: WorldItem;
+  onBack: () => void;
+  onPrevious: () => void;
+  onNext: () => void;
+  onGoToItem?: (index: number) => void;
+}
+
+const items = config.rootPage.WORLD!.items;
+
+export default function WorldDetails({
+  item,
+  onBack,
+  onPrevious,
+  onNext,
+  onGoToItem,
+}: WorldDetailsProps) {
+  if (!item) {
+    return null;
+  }
+
+  // 动画配置
+  const textVariants = {
+    initial: { y: 20, opacity: 0 },
+    animate: { y: 0, opacity: 1 },
+  };
+
+  return (
+    <motion.div
+      className="absolute inset-0 w-full h-full overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* 粒子背景层 
+          关键修改：移除 key={item.imageUrl} 
+          这样AshParticles组件将保持挂载状态，可以利用内部的useEffect来处理图片切换和平滑过渡
+      */}
+      <AshParticles particleImageUrl={item.imageUrl} count={35} />
+
+      {/* 内容层 */}
+      <motion.div className="absolute inset-0 z-[3] pointer-events-none">
+        <div className="absolute top-1/2 -translate-y-1/2 right-[10%] w-[40%] max-w-[600px] flex flex-col pointer-events-auto pl-8 border-l border-white/30">
+          {/* 装饰线 */}
+          <div className="absolute top-0 bottom-0 left-0 w-px bg-gradient-to-b from-transparent via-white/50 to-transparent" />
+
+          <motion.div
+            key={`title-${item.title}`}
+            className="text-[4rem] font-bold leading-none text-white drop-shadow-lg w-[60%]"
+            variants={textVariants}
+            initial="initial"
+            animate="animate"
+            transition={{ delay: 0.1 }}
+          >
+            {item.title}
+          </motion.div>
+
+          <motion.div
+            key={`subtitle-${item.title}`}
+            className="text-[2rem] font-n15eBold text-ark-blue mt-2 mb-6 w-[60%]"
+            variants={textVariants}
+            initial="initial"
+            animate="animate"
+            transition={{ delay: 0.2 }}
+          >
+            {item.subTitle}
+          </motion.div>
+
+          <motion.div
+            key={`desc-${item.title}`}
+            className="text-[1rem] leading-relaxed text-gray-200 w-[60%]"
+            variants={textVariants}
+            initial="initial"
+            animate="animate"
+            transition={{ delay: 0.3 }}
+          >
+            {item.description}
+          </motion.div>
+        </div>
+
+        {/* 导航按钮 (左右箭头) */}
+        <div className="pointer-events-auto">
+          <motion.a
+            className="absolute left-[5%] top-1/2 -translate-y-1/2 p-4 cursor-pointer hover:bg-white/10 rounded-full transition-colors z-[10] origin-center"
+            onClick={(e) => {
+              e.preventDefault();
+              onPrevious();
+            }}
+          >
+            <IconArrow className="w-8 h-8 rotate-180 fill-white opacity-70" />
+          </motion.a>
+
+          <motion.a
+            className="absolute right-[15%] top-1/2 -translate-y-1/2 p-4 cursor-pointer hover:bg-white/10 rounded-full transition-colors z-[10] origin-center"
+            onClick={(e) => {
+              e.preventDefault();
+              onNext();
+            }}
+          >
+            <IconArrow className="w-8 h-8 fill-white opacity-70" />
+          </motion.a>
+        </div>
+      </motion.div>
+
+      {/* 底部进度条/指示器 */}
+      <motion.div
+        className="absolute bottom-[10%] left-[10%] right-[30%] h-1 flex gap-2 z-[3]"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8 }}
+      >
+        {items.map((_: any, index: number) => (
+          <div
+            key={index}
+            className={`h-full flex-1 transition-colors duration-300 ${
+              items[index] === item
+                ? "bg-ark-blue"
+                : "bg-white/20 hover:bg-white/40"
+            } cursor-pointer`}
+            onClick={() => (onGoToItem ? onGoToItem(index) : null)}
+          />
+        ))}
+      </motion.div>
+
+      {/* 返回按钮 */}
+      <motion.button
+        className="absolute bottom-[10%] right-[10%] bg-[#333] hover:bg-[#444] text-white px-8 py-3 flex items-center gap-4 z-[10] transition-colors"
+        onClick={onBack}
+        initial={{ x: 50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
+        <IconArrow className="w-4 h-4 rotate-180 fill-current" />
+        <div className="text-left">
+          <div className="text-sm font-bold">BACK</div>
+          <div className="text-xs opacity-60">RETURN TO MAP</div>
+        </div>
+      </motion.button>
+    </motion.div>
+  );
+}

@@ -1,0 +1,13 @@
+=====================
+DuckDNS配置说明
+=====================
+
+1. 访问DuckDNS官网: https://www.duckdns.org
+2. 登录后获取您的令牌
+3. 修改脚本中的以下参数:
+   - Domain: 您的DuckDNS子域名 (如: myastro)
+   - Token: 您的DuckDNS令牌
+
+示例配置:
+Domain  = "myastro"
+Token   = "abc123def456ghi789jkl012"

@@ -1,0 +1,62 @@
+---
+import type {MarkdownHeading} from "astro"
+import type {SubNavigationItem} from "../_types/SubNavigationItem"
+import InfoLayout from "./InfoLayout.astro"
+import DocsLeftAside from "../components/DocsLeftAside.astro"
+import DocsLeftAsideSwitch from "../components/DocsLeftAsideSwitch"
+import DocumentIndexUL from "../components/DocumentIndexUL.astro"
+import DocsToolPanel from "../components/DocsToolPanel"
+import { getDocsSubNavigationItems } from "../components/DocsCollectionsUtils"
+
+interface Props {
+    title?: string
+    headings?: MarkdownHeading[]
+}
+
+const {title, headings} = Astro.props
+const tabTitle = title ? title + " - 文档" : "文档"
+const subNavigationItems = getDocsSubNavigationItems()
+---
+
+<InfoLayout title="DOCS" subTitle="文档" {...{tabTitle, subNavigationItems}}>
+    {
+        headings && headings.length > 0 &&
+            <nav slot="left-aside"
+                 class="w-[25.5rem] h-full mix-blend-difference bg-list-texture bg-cover bg-center bg-opacity-30 flex flex-col overflow-y-auto">
+                <h2 class="text-black bg-white text-[1.75rem] font-bold px-3 font-oswaldMedium">
+                    Document Index - 文档索引
+                </h2>
+                <DocumentIndexUL {...{headings}}/>
+                <div class="mt-auto">
+                    <div class="text-left select-none p-4">
+                        <div class="text-[1.25rem] text-ark-blue font-black pl-4">
+                            文档
+                        </div>
+                        <div class="text-[#5f5f5f] text-[8rem] leading-none font-oswaldMedium tracking-[-.625rem] pl-4">
+                            DOCS
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <DocsToolPanel/>
+                    </div>
+                </div>
+            </nav>
+    }
+
+    <div id="docs-content"
+         class="max-w-[100rem] h-full mx-auto overflow-y-auto transition-[height] duration-300">
+        {/* TODO: 面包屑导航 */}
+        {
+            headings && headings.length > 0 &&
+                <details class="pb-8 landscape:hidden">
+                    <summary class="text-black bg-white text-[24px] font-bold px-3 font-oswaldMedium">
+                        Document Index - 文档索引
+                    </summary>
+                    <DocumentIndexUL {...{headings}}/>
+                </details>
+        }
+        <slot/>
+    </div>
+
+    <!-- 工具面板已移动到左侧边栏 -->
+</InfoLayout>
