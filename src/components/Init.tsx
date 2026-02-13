@@ -46,7 +46,7 @@ export function Init() {
                         setLoadedResources(prev => new Set(prev).add(resourceName));
                         incrementProgress();
 
-                        if (resourceName.endsWith('/images/index-bg.jpg')) {
+                        if (resourceName.includes('/images/index-bg.jpg')) {
                             isInitialized.set(true);
                             stopObserving();
                             // console.log("背景图片加载成功，停止监控");
@@ -67,7 +67,7 @@ export function Init() {
                     // console.log("已加载成功的资源:", entry.name);
                     setLoadedResources(prev => new Set(prev).add(entry.name));
                     incrementProgress();
-                    if (entry.name.endsWith('/images/index-bg.jpg')) {
+                    if (entry.name.includes('/images/index-bg.jpg')) {
                         isInitialized.set(true);
                         stopObserving();
                         // console.log("背景图片已加载成功，停止监控");
