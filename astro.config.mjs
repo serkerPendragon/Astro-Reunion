@@ -14,8 +14,8 @@ export default defineConfig({
     integrations: [react(), tailwind({applyBaseStyles: false})],
     
     // 添加以下配置以支持 GitHub Pages 部署
-    // 将 'astro-arknights' 替换为你的仓库名称
-    base: '',
+    // 将 'Astro-Reunion' 替换为你的仓库名称
+    base: '/Astro-Reunion/',
     
     // Vite 配置
     vite: {
